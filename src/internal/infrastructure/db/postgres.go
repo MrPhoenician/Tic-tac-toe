@@ -21,7 +21,7 @@ func NewPostgresDB(ctx context.Context, connString string) (*PostgresDB, error) 
 		return nil, err
 	}
 
-	log.Println("✅ PostgresSQL connected")
+	log.Println("PostgresSQL connected")
 	return &PostgresDB{pool: pool}, nil
 }
 

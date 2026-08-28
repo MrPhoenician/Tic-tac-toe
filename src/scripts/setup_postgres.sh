@@ -29,7 +29,7 @@ container_running() {
 }
 
 if ! container_exists; then
-	echo "Создаю контейнер $CONTAINER_NAME из образа $POSTGRES_IMAGE..."
+	echo "Создание контейнер $CONTAINER_NAME из образа $POSTGRES_IMAGE..."
 	docker run -d \
 		--name "$CONTAINER_NAME" \
 		-e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
@@ -37,13 +37,13 @@ if ! container_exists; then
 		-p "$POSTGRES_PORT":5432 \
 		"$POSTGRES_IMAGE" >/dev/null
 elif ! container_running; then
-	echo "Запускаю существующий контейнер $CONTAINER_NAME..."
+	echo "Запуск существующего контейнера $CONTAINER_NAME..."
 	docker start "$CONTAINER_NAME" >/dev/null
 else
 	echo "Контейнер $CONTAINER_NAME уже запущен."
 fi
 
-echo "Жду готовности PostgreSQL..."
+echo "Ожидание готовности PostgreSQL..."
 until docker exec "$CONTAINER_NAME" pg_isready -U "$POSTGRES_USER" >/dev/null 2>&1; do
 	sleep 1
 done
@@ -51,13 +51,13 @@ done
 DB_EXISTS="$(docker exec "$CONTAINER_NAME" psql -U "$POSTGRES_USER" -tAc "SELECT 1 FROM pg_database WHERE datname = '$POSTGRES_DB';" | tr -d '[:space:]')"
 
 if [ "$DB_EXISTS" != "1" ]; then
-	echo "Создаю базу данных $POSTGRES_DB..."
+	echo "Создание базы данных $POSTGRES_DB..."
 	docker exec "$CONTAINER_NAME" psql -U "$POSTGRES_USER" -c "CREATE DATABASE $POSTGRES_DB;" >/dev/null
 else
 	echo "База данных $POSTGRES_DB уже существует."
 fi
 
-echo "Применяю схему из $SCHEMA_PATH..."
+echo "Применение схемы из $SCHEMA_PATH..."
 docker exec -i "$CONTAINER_NAME" psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" < "$SCHEMA_PATH" >/dev/null
 
 cat <<MSG

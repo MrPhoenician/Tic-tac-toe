@@ -21,7 +21,7 @@ func main() {
 		) {
 			router := api.NewRouter(authHandler, gameHandler, authService, log).Routes()
 
-			log.Info("🚀 Server starting on http://localhost:8080")
+			log.Info("Server starting on http://localhost:8080")
 			if err := http.ListenAndServe(":8080", router); err != nil {
 				log.Error("Server failed", "error", err)
 			}
